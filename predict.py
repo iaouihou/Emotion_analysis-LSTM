@@ -12,12 +12,12 @@ from collections import OrderedDict
 import torch.nn.functional as F
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QAction, QTextEdit, QPushButton, QVBoxLayout, QWidget, \
-    QLabel, QDialog
+    QLabel, QDialog,QDesktopWidget
 
 # 超参数设置
 data_path = './data/data.txt'  # 数据集
 vocab_path = './data/vocab.pkl'  # 词表
-save_path = './saved_dict/lstm.ckpt'  # 模型训练结果
+# save_path = './saved_dict/lstm.ckpt'  # 模型训练结果
 embedding_pretrained = \
     torch.tensor(
         np.load(
@@ -46,7 +46,7 @@ def get_data():
     train, dev, test = load_dataset(data_path, pad_size, tokenizer, vocab)
     return vocab, train, dev, test
 
-
+# 加载数据集
 def load_dataset(path, pad_size, tokenizer, vocab):
     contents = []
     n = 0
@@ -147,8 +147,11 @@ def predict_sentiment(text, model, vocab, pad_size):
         probabilities = F.softmax(outputs, dim=1)
         negative=probabilities.cpu().numpy()[0][0]
         active=probabilities.cpu().numpy()[0][1]
-        results="消极的概率:"+str(negative)+"\n积极的概率:"+str(active)
-        return results
+        return negative,active
+
+
+
+
 
 def load_model(model, model_path):
     # 加载模型参数
@@ -164,16 +167,34 @@ def load_model(model, model_path):
     else:
         model.load_state_dict(state_dict)
     return model
-
+# 前端界面
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.output_news_label = None
+        self.analysis_result_label = None
+        self.input_text_edit = None
+        self.start_button = None
+        self.clear_button = None
         self.setWindowTitle('情感分析系统')
+        self.setFixedSize(400, 600)  # 设置窗口大小
+        self.center()  # 调用居中方法
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
         self.layout = QVBoxLayout(self.central_widget)
         self.create_menu_bar()
         self.create_widgets()
+
+    def center(self):
+        # 获取屏幕的尺寸
+        screen = QDesktopWidget().screenGeometry()
+        # 获取窗口的尺寸
+        window_size = self.geometry()
+        # 计算居中的位置
+        x =int( (screen.width() - window_size.width()) / 2)
+        y = int((screen.height() - window_size.height()) / 2)
+        # 设置窗口的位置
+        self.move(x, y)
 
     def create_menu_bar(self):
         menubar = self.menuBar()
@@ -184,6 +205,7 @@ class MainWindow(QMainWindow):
 
     def create_widgets(self):
         self.input_text_edit = QTextEdit()
+        self.input_text_edit.setStyleSheet("font-size: 20px;")  # 设置字体大小为20像素
         self.layout.addWidget(self.input_text_edit)
 
         self.analysis_result_label = QLabel('分析结果：')
@@ -215,7 +237,8 @@ class MainWindow(QMainWindow):
 
     def analyze_sentiment(self):
         # input_text = self.input_text_edit.toPlainText()
-        input_text = predict_sentiment(self.input_text_edit.toPlainText(), model, vocab, pad_size=50)
+        negative,active = predict_sentiment(self.input_text_edit.toPlainText(), model, vocab, pad_size=50)
+        input_text = "消极的概率:"+str(negative)+"\n积极的概率:"+str(active)
         # 这里需要调用情感分析函数，并将结果更新到输出标签中
         # 现在仅将输入文本设置为输出结果
         self.output_news_label.setText(input_text)
@@ -245,10 +268,11 @@ model = Model()
 # 加载训练好的模型参数
 model_path = './saved_dict/lstm.ckpt'
 model = load_model(model, model_path)
-
+input_path = './data/test_data.txt'
 
 if __name__ == '__main__':
     # 进行情感预测
+    tokenizer = lambda x: [y for y in x]  # 字级别
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
