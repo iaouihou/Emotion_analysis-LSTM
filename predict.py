@@ -135,7 +135,7 @@ def preprocess(text, vocab, pad_size):
     return torch.tensor(words_line).unsqueeze(0)
 
 
-def predict_sentiment(text, model, vocab, pad_size):
+def predict_sentiment(text, pad_size):
     # 将模型设置为评估模式
     model.eval()
     with torch.no_grad():
@@ -148,11 +148,15 @@ def predict_sentiment(text, model, vocab, pad_size):
         negative=probabilities.cpu().numpy()[0][0]
         active=probabilities.cpu().numpy()[0][1]
         return negative,active
-
-
-
-
-
+def get_sentiment_label(negative, positive):
+    # 如果negative和positive之差小于0.2，则认为是中性
+    if abs(negative - positive) < 0.2:
+        return "中性"
+    # 否则，根据negative和positive的比例来确定情感
+    elif negative > positive:
+        return "消极"
+    elif negative < positive:
+        return "积极"
 def load_model(model, model_path):
     # 加载模型参数
     state_dict = torch.load(model_path)
@@ -237,7 +241,7 @@ class MainWindow(QMainWindow):
 
     def analyze_sentiment(self):
         # input_text = self.input_text_edit.toPlainText()
-        negative,active = predict_sentiment(self.input_text_edit.toPlainText(), model, vocab, pad_size=50)
+        negative,active = predict_sentiment(self.input_text_edit.toPlainText(), pad_size=50)
         input_text = "消极的概率:"+str(negative)+"\n积极的概率:"+str(active)
         # 这里需要调用情感分析函数，并将结果更新到输出标签中
         # 现在仅将输入文本设置为输出结果
@@ -268,11 +272,9 @@ model = Model()
 # 加载训练好的模型参数
 model_path = './saved_dict/lstm.ckpt'
 model = load_model(model, model_path)
-input_path = './data/test_data.txt'
 
 if __name__ == '__main__':
     # 进行情感预测
-    tokenizer = lambda x: [y for y in x]  # 字级别
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()

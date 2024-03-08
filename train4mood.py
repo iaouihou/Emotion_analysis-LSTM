@@ -117,26 +117,37 @@ def get_time_dif(start_time):
 
 
 # 定义LSTM模型
+import torch
+import torch.nn as nn
+
 class Model(nn.Module):
-    def __init__(self):
+    def __init__(self, embedding_pretrained, embed, hidden_size, num_layers, num_classes, dropout=0.2):
         super(Model, self).__init__()
-        # 使用预训练的词向量模型，freeze=False 表示允许参数在训练中更新
-        # 在NLP任务中，当我们搭建网络时，第一层往往是嵌入层，对于嵌入层有两种方式初始化embedding向量，
-        # 一种是直接随机初始化，另一种是使用预训练好的词向量初始化。
+        # 初始化词嵌入层，使用预训练的词向量，并允许参数在训练中更新
         self.embedding = nn.Embedding.from_pretrained(embedding_pretrained, freeze=False)
-        # bidirectional=True表示使用的是双向LSTM
+        # 初始化LSTM层，双向LSTM，dropout用于减轻过拟合
         self.lstm = nn.LSTM(embed, hidden_size, num_layers,
                             bidirectional=True, batch_first=True, dropout=dropout)
-        # 因为是双向LSTM，所以层数为config.hidden_size * 2
+        # Dropout层用于进一步减轻过拟合
+        self.dropout = nn.Dropout(dropout)
+        # 全连接层，输出类别数的分数
         self.fc = nn.Linear(hidden_size * 2, num_classes)
+        # ReLU激活函数，增加非线性能力
+        self.relu = nn.ReLU()
 
     def forward(self, x):
+        # 输入x为序列数据，经过词嵌入层转换为词向量表示
         out = self.embedding(x)
-        # lstm 的input为[batchsize, max_length, embedding_size]，输出表示为 output,(h_n,c_n),
-        # 保存了每个时间步的输出，如果想要获取最后一个时间步的输出，则可以这么获取：output_last = output[:,-1,:]
+        # LSTM层处理序列数据
         out, _ = self.lstm(out)
-        out = self.fc(out[:, -1, :])  # 句子最后时刻的 hidden state
+        # Dropout层用于减轻过拟合
+        out = self.dropout(out)
+        # 取序列最后一个时间步的隐藏状态作为输出
+        out = self.fc(out[:, -1, :])
+        # 使用ReLU激活函数增加非线性能力
+        out = self.relu(out)
         return out
+
 def get_time_dif(start_time):
     """获取已使用时间"""
     end_time = time.time()

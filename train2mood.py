@@ -29,8 +29,8 @@ embedding_pretrained = \
 embed = embedding_pretrained.size(1)        # 词向量维度
 dropout = 0.5                               # 随机丢弃
 num_classes = 2                             # 类别数
-num_epochs = 30                             # epoch数
-batch_size = 128                            # mini-batch大小
+num_epochs = 5                             # epoch数
+batch_size = 256                            # mini-batch大小
 pad_size = 50                               # 每句话处理成的长度(短填长切)
 learning_rate = 1e-3                        # 学习率
 hidden_size = 128                           # lstm隐藏层
@@ -65,10 +65,11 @@ def load_dataset(path, pad_size, tokenizer, vocab):
         for line in tqdm(f):
             # 默认删除字符串line中的空格、’\n’、't’等。
             lin = line.strip()
-            lin = re.sub(r'\[.*?\]', '', lin)
+            # 删除[]以及其中包含的文字，排除表情的影响
+            # lin = re.sub(r'\[.*?\]', '', lin)
             # 使用正则表达式删除@和:符号及其后面的文字
             lin = re.sub(r'@.*?:', '', lin)
-            # 删除[]以及其中包含的文字，排除表情的影响
+
             lin = lin.replace('//', '')
             if not lin:
                 continue
