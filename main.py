@@ -1,13 +1,13 @@
 import sys
 import time
-
+import pandas as pd
 from predict import predict_sentiment
 from predict import get_sentiment_label
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QAction, QTextEdit, QPushButton, QVBoxLayout, QWidget, \
-    QLabel, QDialog,QDesktopWidget
+    QLabel, QDialog, QDesktopWidget, QFileDialog, QTableWidgetItem
 import csv
 import os
-
+from LoadCsv import LoadCsvWindow
 csv_path = './results/results.csv'
 # 将读取的数据写入csv中保存
 def write_to_csv(csv_path, current_time, input_text, negative, positive):
@@ -40,6 +40,7 @@ def write_to_csv(csv_path, current_time, input_text, negative, positive):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.load_button = None
         self.output_news_label = None
         self.analysis_result_label = None
         self.input_text_edit = None
@@ -72,6 +73,10 @@ class MainWindow(QMainWindow):
         about_action.triggered.connect(self.show_about_dialog)
         help_menu.addAction(about_action)
 
+    def open_LoadCsv_window(self):
+        self.csv_window = LoadCsvWindow()  # 创建第二个窗口实例
+        self.csv_window.show()  # 显示第二个窗口
+
     def create_widgets(self):
         self.input_text_edit = QTextEdit()
         self.input_text_edit.setStyleSheet("font-size: 20px;")  # 设置字体大小为20像素
@@ -95,6 +100,38 @@ class MainWindow(QMainWindow):
         self.clear_button.clicked.connect(self.clear_input)
         self.layout.addWidget(self.clear_button)
 
+        self.load_button = QPushButton('查看历史记录')
+        self.load_button.setStyleSheet("font: 15pt Helvetica;")
+        self.load_button.clicked.connect(self.open_LoadCsv_window)
+        self.layout.addWidget(self.load_button)
+
+    def load_csv(self):
+        if not csv_path:
+            return
+
+        # 读取 CSV 文件
+        df = pd.read_csv(csv_path)
+
+        # 清空表格
+        self.table_widget.clear()
+
+        # 设置表格的行数和列数
+        self.table_widget.setRowCount(df.shape[0])
+        self.table_widget.setColumnCount(df.shape[1])
+
+        # 设置表头
+        column_names = ['时间', '文本', '识别结果', '消极概率', '积极概率']
+        self.table_widget.setHorizontalHeaderLabels(column_names)
+
+        # 填充表格内容
+        for i, row in df.iterrows():
+            for j, value in enumerate(row):
+                item = QTableWidgetItem(str(value))
+                self.table_widget.setItem(i, j, item)
+
+        # 调整表格大小
+        self.table_widget.resizeColumnsToContents()
+        self.table_widget.resizeRowsToContents()
     def show_about_dialog(self):
         about_dialog = QDialog()
         about_dialog.setWindowTitle('About')
