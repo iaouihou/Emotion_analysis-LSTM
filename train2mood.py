@@ -14,7 +14,7 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 from sklearn.metrics import precision_score, accuracy_score, f1_score, recall_score
 import re
-
+from preprocess import *
 
 # 超参数设置
 data_path =  './data/data.txt'              # 数据集
@@ -58,6 +58,7 @@ def load_dataset(path, pad_size, tokenizer, vocab):
     :param vocab: 词向量模型
     :return: 二元组，含有字ID，标签
     '''
+    stopwords = load_stop_words(stop_words_path)
     contents = []
     n=0
     with open(path, 'r', encoding='gbk') as f:
@@ -73,11 +74,14 @@ def load_dataset(path, pad_size, tokenizer, vocab):
             lin = lin.replace('//', '')
             if not lin:
                 continue
-            print(lin)
+            # print(lin)
             label,content = lin.split('	####	')
             # word_line存储每个字的id
             words_line = []
             # 分割器，分词每个字
+            # print(content)
+            # content = remove_stopwords(content,stopwords)
+            # print(content)
             token = tokenizer(content)
             # print(token)
             # 字的长度

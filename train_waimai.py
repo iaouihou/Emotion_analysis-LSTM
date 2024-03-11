@@ -14,12 +14,12 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 from sklearn.metrics import precision_score, accuracy_score, f1_score, recall_score
 import re
-
+from preprocess import *
 
 # 超参数设置
 data_path =  './data/waimai_data.txt'              # 数据集
 vocab_path = './data/vocab.pkl'             # 词表
-save_path = './saved_dict/lstm.ckpt'        # 模型训练结果
+save_path = './saved_dict/lstm_waimai.ckpt'        # 模型训练结果
 embedding_pretrained = \
     torch.tensor(
     np.load(
@@ -29,7 +29,7 @@ embedding_pretrained = \
 embed = embedding_pretrained.size(1)        # 词向量维度
 dropout = 0.5                               # 随机丢弃
 num_classes = 2                             # 类别数
-num_epochs = 30                             # epoch数
+num_epochs = 10                             # epoch数
 batch_size = 128                            # mini-batch大小
 pad_size = 50                               # 每句话处理成的长度(短填长切)
 learning_rate = 1e-3                        # 学习率
@@ -58,6 +58,7 @@ def load_dataset(path, pad_size, tokenizer, vocab):
     :param vocab: 词向量模型
     :return: 二元组，含有字ID，标签
     '''
+    stopwords = load_stop_words(stop_words_path)
     contents = []
     n=0
     with open(path, 'r', encoding='utf-8') as f:
@@ -72,14 +73,17 @@ def load_dataset(path, pad_size, tokenizer, vocab):
             lin = lin.replace('//', '')
             if not lin:
                 continue
-            print(lin)
+            # print(lin)
             label,content = lin.split('	####	')
             # word_line存储每个字的id
             words_line = []
             # 分割器，分词每个字
-            token = tokenizer(content)
+            print(content)
+            # content = remove_stopwords(content,stopwords)
+            # print(content)
             # print(token)
             # 字的长度
+            token = tokenizer(content)
             seq_len = len(token)
             if pad_size:
                 # 如果字长度小于指定长度，则填充，否则截断
@@ -202,7 +206,6 @@ def train( model, dataloaders):
     print("Start Training...\n")
     plot_train_acc = []
     plot_train_loss = []
-
     for i in range(num_epochs):
         # 1，训练循环----------------------------------------------------------------
         # 将数据全部取完
