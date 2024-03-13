@@ -7,7 +7,7 @@ import time
 import torch
 from collections import OrderedDict
 import torch.nn.functional as F
-import jieba
+from preprocess import  keep_chinese
 
 # 超参数设置
 vocab_path = './data/vocab.pkl'  # 词表
@@ -62,22 +62,6 @@ class Model(nn.Module):
 
 
 
-def load_stop_words(stop_words_path):
-    stop_words = []
-    with open(stop_words_path, 'r', encoding='utf-8') as f:
-        for line in f:
-            stop_words.append(line.strip())
-    return stop_words
-def remove_stopwords(text, stopwords):
-    # 使用jieba进行中文分词
-    words = jieba.lcut(text)
-    # 去除停用词
-    filtered_words = [word for word in words if word not in stopwords]
-    # 将过滤后的单词列表连接成字符串，保持原有格式
-    print(filtered_words)
-    processed_text = ' '.join(filtered_words)
-    print()
-    return processed_text
 def preprocess(text, vocab, pad_size):
     words_line = []
     tokenizer = lambda x: [y for y in x]  # 字级别分词
@@ -99,9 +83,6 @@ def preprocess(text, vocab, pad_size):
 
 def predict_sentiment(text, pad_size):
     # 将模型设置为评估模式
-    stop_words = load_stop_words(stop_words_path)
-    # text = remove_stopwords(text,stop_words)
-    # 对输入文本去停词
     model.eval()
     with torch.no_grad():
         input_tensor = preprocess(text, vocab, pad_size)
@@ -161,4 +142,4 @@ model = load_model(model, model_path)
 
 if __name__ == '__main__':
     # 进行情感预测
-    print(predict_sentiment("这是一个包含停用词的例子。其中一些词可能是停用词，例如的、是、在、一个等等",pad_size=50))
+    print(predict_sentiment("在这放一只猫猫，看书看累的人可以摸摸它，路过的人可以摸摸她，但是别摸死了／l、（ﾟ､ 。 ７l、 ~ヽじしf_, )ノ 祝摸过的人好运连连，身体健康，开开心心哦",pad_size=50))

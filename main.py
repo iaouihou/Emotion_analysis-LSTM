@@ -2,34 +2,28 @@ import csv
 import os
 import sys
 import time
-import pandas as pd
-from PyQt5.QtCore import Qt
-from PyQt5 import QtCore
-from PyQt5.QtGui import QCursor
-# from PyQt5.uic.properties import QtCore
 
 from predict import predict_sentiment
 from predict import get_sentiment_label
-from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QTableWidgetItem, QVBoxLayout, QLabel, QAction, \
-    QDesktopWidget
+from PyQt5.QtWidgets import QApplication, QDialog, QVBoxLayout, QLabel, QAction
 from PyQt5.uic import loadUi
 from LoadCsv import LoadCsvWindow
-
+from ui.MyWindows import *
 
 csv_path = './results/results.csv'
+
 
 # 将读取的数据写入csv中保存
 def write_to_csv(csv_path, current_time, input_text, negative, positive):
     # 获取识别结果
     sentiment_label = get_sentiment_label(negative, positive)
-
     # 检查CSV文件是否存在，如果不存在，则创建一个新文件并写入表头
     is_new_file = False
     if not os.path.exists(csv_path):
         is_new_file = True
 
     # 将数据写入CSV文件
-    with open(csv_path, 'a', newline='') as csvfile:
+    with open(csv_path, 'a', newline='', encoding='utf-8-sig') as csvfile:  # 注意这里使用了 utf-8-sig
         fieldnames = ['时间', '文本', '识别结果', '消极概率', '积极概率']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -41,8 +35,7 @@ def write_to_csv(csv_path, current_time, input_text, negative, positive):
         writer.writerow({'时间': current_time, '文本': input_text, '识别结果': sentiment_label,'消极概率': negative,
                          '积极概率': positive})
 
-
-class MainWindow(QMainWindow):
+class MainWindow(MyWindow):
     def __init__(self):
         super().__init__()
         loadUi('./ui/mainwindow.ui', self)  # 加载UI文件
@@ -50,7 +43,7 @@ class MainWindow(QMainWindow):
         self.setFixedSize(450, 750)  # 设置窗口大小
         self.center()  # 调用居中方法
         # 设置背景颜色为白色
-        self.setStyleSheet("background-color: white;")
+        # self.setStyleSheet("background-color: white;")
         self.create_menu_bar()
         self.start_button.clicked.connect(self.analyze_sentiment)
         self.clear_button.clicked.connect(self.clear_input)
@@ -59,32 +52,6 @@ class MainWindow(QMainWindow):
         self.hidden_pushButton.clicked.connect(self.showMinimized)
         # 隐藏标题栏
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
-    def mousePressEvent(self, event):  #窗口拖动
-        if event.button() == Qt.LeftButton:
-            self.m_flag = True
-            self.m_Position = event.globalPos() - self.pos()
-            event.accept()
-            self.setCursor(QCursor(Qt.OpenHandCursor))
-
-    def mouseMoveEvent(self, QMouseEvent):
-        if Qt.LeftButton and self.m_flag:
-            self.move(QMouseEvent.globalPos() - self.m_Position)
-            QMouseEvent.accept()
-
-    def mouseReleaseEvent(self, QMouseEvent):
-        self.m_flag = False
-        self.setCursor(QCursor(Qt.ArrowCursor))
-
-    def center(self):
-        # 获取屏幕的尺寸
-        screen = QDesktopWidget().screenGeometry()
-        # 获取窗口的尺寸
-        window_size = self.geometry()
-        # 计算居中的位置
-        x =int( (screen.width() - window_size.width()) / 2)
-        y = int((screen.height() - window_size.height()) / 2)
-        # 设置窗口的位置
-        self.move(x, y)
 
     def create_menu_bar(self):
         menubar = self.menuBar()

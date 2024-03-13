@@ -1,19 +1,25 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QTableWidget, QTableWidgetItem, QMenu, \
+from PyQt5.QtWidgets import QApplication, QVBoxLayout, QTableWidgetItem, QMenu, \
     QDesktopWidget
 import pandas as pd
+from PyQt5.uic import loadUi
+
+from ui.MyWindows import MyWindow
 
 
-class LoadCsvWindow(QMainWindow):
+class LoadCsvWindow(MyWindow):
     def __init__(self):
         super().__init__()
+        loadUi('./ui/loadCsv.ui', self)  # 加载UI文件
         self.setWindowTitle('CSV Viewer')
-        self.central_widget = QWidget()
+        # self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
         self.layout = QVBoxLayout(self.central_widget)
         self.setFixedSize(800, 600)  # 设置窗口大小
         self.center()  # 调用居中方法
-
-        self.table_widget = QTableWidget()
+        # # 美化后的最小化和关闭键
+        # self.close_pushButton.clicked.connect(self.close)
+        # self.hidden_pushButton.clicked.connect(self.showMinimized)
+        # self.table_widget = QTableWidget()
         self.layout.addWidget(self.table_widget)
 
         # 添加右键菜单
@@ -39,7 +45,7 @@ class LoadCsvWindow(QMainWindow):
     def load_csv(self):
         try:
             # 读取 CSV 文件
-            self.df = pd.read_csv(self.csv_path, encoding='gbk')
+            self.df = pd.read_csv(self.csv_path, encoding='utf-8-sig')
 
             # 设置表格的行数和列数
             self.table_widget.setRowCount(self.df.shape[0])
@@ -52,7 +58,12 @@ class LoadCsvWindow(QMainWindow):
             # 填充表格内容
             for i, row in self.df.iterrows():
                 for j, value in enumerate(row):
-                    item = QTableWidgetItem(str(value))
+                    item = QTableWidgetItem()
+                    if isinstance(value, str) and len(value) > 20:  # 如果字符串太长
+                        lines = [value[k:k+20] for k in range(0, len(value), 20)]  # 将字符串分成长度为20的行
+                        item.setText('\n'.join(lines))  # 插入换行符
+                    else:
+                        item.setText(str(value))
                     self.table_widget.setItem(i, j, item)
 
             # 调整表格大小
@@ -73,7 +84,7 @@ class LoadCsvWindow(QMainWindow):
         try:
             if row_index >= 0 and row_index < self.df.shape[0]:
                 self.df = self.df.drop(self.df.index[row_index])
-                self.df.to_csv(self.csv_path, index=False, encoding='gbk')
+                self.df.to_csv(self.csv_path, index=False, encoding='utf-8-sig')
                 self.table_widget.removeRow(row_index)
         except Exception as e:
             print("An error occurred while deleting row:", e)

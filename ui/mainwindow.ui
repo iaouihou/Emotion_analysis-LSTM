@@ -13,6 +13,13 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget {
+	background-color: white; /* 设置背景颜色为白色 */
+	border: none; /* 移除边框 */
+}
+</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLabel" name="output_news_label">
     <property name="geometry">
@@ -20,7 +27,7 @@
       <x>10</x>
       <y>450</y>
       <width>411</width>
-      <height>101</height>
+      <height>81</height>
      </rect>
     </property>
     <property name="font">
@@ -189,7 +196,7 @@ background:#FFC105;
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>610</y>
+      <y>570</y>
       <width>150</width>
       <height>30</height>
      </rect>
@@ -238,8 +245,8 @@ background:#FFC105;
    <widget class="QPushButton" name="clear_button">
     <property name="geometry">
      <rect>
-      <x>230</x>
-      <y>610</y>
+      <x>210</x>
+      <y>570</y>
       <width>150</width>
       <height>30</height>
      </rect>
@@ -372,7 +379,7 @@ background:#FFC105;
     <property name="geometry">
      <rect>
       <x>50</x>
-      <y>570</y>
+      <y>530</y>
       <width>311</width>
       <height>31</height>
      </rect>
@@ -421,6 +428,56 @@ QComboBox::down-arrow {
       <string>模型3</string>
      </property>
     </item>
+   </widget>
+   <widget class="QPushButton" name="start_button_2">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>610</y>
+      <width>150</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>16777215</width>
+      <height>30</height>
+     </size>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{
+    border:0px;
+    height:30px;
+    border-radius:15px;
+    font-family:'Microsoft YaHei';
+    font-size:20px;
+	color:white;
+    background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #fbc2eb, stop:1 #a6c1ee);
+    }
+
+ QPushButton:hover{
+     background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #ffd2f0, stop:1 #b0cbf8);
+ }
+ 
+ QPushButton:pressed{
+     background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #e1aad2, stop:1 #92adda);
+     }</string>
+    </property>
+    <property name="text">
+     <string>贴吧</string>
+    </property>
+    <property name="flat">
+     <bool>false</bool>
+    </property>
    </widget>
   </widget>
  </widget>
