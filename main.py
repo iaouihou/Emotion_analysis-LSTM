@@ -9,31 +9,31 @@ from PyQt5.QtWidgets import QApplication, QDialog, QVBoxLayout, QLabel, QAction
 from PyQt5.uic import loadUi
 from LoadCsv import LoadCsvWindow
 from ui.MyWindows import *
-
+from mycsv.csv import *
 csv_path = './results/results.csv'
 
 
 # 将读取的数据写入csv中保存
-def write_to_csv(csv_path, current_time, input_text, negative, positive):
-    # 获取识别结果
-    sentiment_label = get_sentiment_label(negative, positive)
-    # 检查CSV文件是否存在，如果不存在，则创建一个新文件并写入表头
-    is_new_file = False
-    if not os.path.exists(csv_path):
-        is_new_file = True
-
-    # 将数据写入CSV文件
-    with open(csv_path, 'a', newline='', encoding='utf-8-sig') as csvfile:  # 注意这里使用了 utf-8-sig
-        fieldnames = ['时间', '文本', '识别结果', '消极概率', '积极概率']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-        # 如果是新文件，需要重新写入表头
-        if is_new_file:
-            writer.writeheader()
-
-        # 写入数据行
-        writer.writerow({'时间': current_time, '文本': input_text, '识别结果': sentiment_label,'消极概率': negative,
-                         '积极概率': positive})
+# def write_to_csv(csv_path, current_time, input_text, negative, positive):
+#     # 获取识别结果
+#     sentiment_label = get_sentiment_label(negative, positive)
+#     # 检查CSV文件是否存在，如果不存在，则创建一个新文件并写入表头
+#     is_new_file = False
+#     if not os.path.exists(csv_path):
+#         is_new_file = True
+#
+#     # 将数据写入CSV文件
+#     with open(csv_path, 'a', newline='', encoding='utf-8-sig') as csvfile:  # 注意这里使用了 utf-8-sig
+#         fieldnames = ['时间', '文本', '识别结果', '消极概率', '积极概率']
+#         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+#
+#         # 如果是新文件，需要重新写入表头
+#         if is_new_file:
+#             writer.writeheader()
+#
+#         # 写入数据行
+#         writer.writerow({'时间': current_time, '文本': input_text, '识别结果': sentiment_label,'消极概率': negative,
+#                          '积极概率': positive})
 
 class MainWindow(MyWindow):
     def __init__(self):
@@ -81,13 +81,11 @@ class MainWindow(MyWindow):
         # 这里需要调用情感分析函数，并将结果更新到输出标签中
         # 现在仅将输入文本设置为输出结果
         self.output_news_label.setText(output_text)
-        current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        write_to_csv(csv_path, current_time, input_text, negative, positive)
+        write_to_csv(csv_path, input_text, negative, positive)
 
     def clear_input(self):
         self.input_text_edit.clear()
         self.output_news_label.clear()
-
 
 if __name__ == '__main__':
     # 进行情感预测

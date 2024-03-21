@@ -10,14 +10,8 @@ from PyQt5 import QtCore
 class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-
-        # Load the .ui file
-        loadUi('MainWindows.ui', self)
-
         # Hide the title bar
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
-        self.close_pushButton.clicked.connect(self.close)
-        self.hidden_pushButton.clicked.connect(self.showMinimized)
 
     #窗口拖动
     def mousePressEvent(self, event):

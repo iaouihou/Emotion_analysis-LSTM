@@ -10,7 +10,8 @@ class MyWindow(QMainWindow):
         # 初始化窗口拖动相关变量
         self.m_flag = False
         self.m_Position = None
-        # self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
+        self.setStyleSheet("background-color: white;")
+        self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:

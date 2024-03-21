@@ -14,10 +14,37 @@
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QWidget {
-	background-color: white; /* 设置背景颜色为白色 */
-	border: none; /* 移除边框 */
+   <string notr="true">QLineEdit{
+    border:0px;    
+    margin:10px;
+	margin-left:10px; 
+	margin-right:10px;
+    border-bottom: 2px solid #B3B3B3;
+    font-family:'Microsoft YaHei';
+    font-size:20px;
+    font-weight:bold;
+    }
+
+QLineEdit:hover{
+    border-bottom: 3px solid #66A3FF;
+    }
+
+QLineEdit:focus{
+    border-bottom: 3px solid #E680BD;
+    }
+
+QWidget#centralwidget{
+	background:white;
+	border-radius:10px;
 }
+
+QLabel{
+    text-align:right;
+    font-family:'Microsoft YaHei';
+    font-size:30px;
+    font-weight:bold;
+    }
+
 </string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -345,8 +372,8 @@ background:#FFC105;
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>80</y>
+      <x>30</x>
+      <y>100</y>
       <width>349</width>
       <height>40</height>
      </rect>
@@ -359,10 +386,10 @@ background:#FFC105;
     </property>
     <property name="font">
      <font>
-      <family>幼圆</family>
-      <pointsize>24</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
+      <family>Microsoft YaHei</family>
+      <pointsize>-1</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="layoutDirection">
@@ -429,12 +456,12 @@ QComboBox::down-arrow {
      </property>
     </item>
    </widget>
-   <widget class="QPushButton" name="start_button_2">
+   <widget class="QPushButton" name="spider_button">
     <property name="geometry">
      <rect>
       <x>40</x>
       <y>610</y>
-      <width>150</width>
+      <width>341</width>
       <height>30</height>
      </rect>
     </property>
@@ -473,7 +500,7 @@ QComboBox::down-arrow {
      }</string>
     </property>
     <property name="text">
-     <string>贴吧</string>
+     <string>爬虫并分析</string>
     </property>
     <property name="flat">
      <bool>false</bool>

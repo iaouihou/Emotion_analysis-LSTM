@@ -2,23 +2,25 @@ from PyQt5.QtWidgets import QApplication, QVBoxLayout, QTableWidgetItem, QMenu, 
     QDesktopWidget
 import pandas as pd
 from PyQt5.uic import loadUi
-
+from PyQt5.QtCore import Qt
 from ui.MyWindows import MyWindow
 
 
 class LoadCsvWindow(MyWindow):
     def __init__(self):
         super().__init__()
-        loadUi('./ui/loadCsv.ui', self)  # 加载UI文件
+        loadUi('./ui/loadcsv.ui', self)  # 加载UI文件
         self.setWindowTitle('CSV Viewer')
+
+        self.setWindowFlag(Qt.FramelessWindowHint, False)
         # self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
         self.layout = QVBoxLayout(self.central_widget)
         self.setFixedSize(800, 600)  # 设置窗口大小
         self.center()  # 调用居中方法
-        # # 美化后的最小化和关闭键
-        # self.close_pushButton.clicked.connect(self.close)
-        # self.hidden_pushButton.clicked.connect(self.showMinimized)
+        # 美化后的最小化和关闭键
+        self.close_pushButton.clicked.connect(self.close)
+        self.hidden_pushButton.clicked.connect(self.showMinimized)
         # self.table_widget = QTableWidget()
         self.layout.addWidget(self.table_widget)
 

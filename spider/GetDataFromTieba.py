@@ -58,13 +58,20 @@ async def extract_post_info(post):
     return text_content, userid, user_name, nick_name_new,ip_address
 
 
-async def write_posts_to_csv(posts, filename):
-    with open(filename, mode='a', encoding='utf-8-sig', newline='') as file:
-        # 写入 CSV 文件的代码
+
+async def write_posts_to_csv(posts, filepath):
+    # 检查文件是否存在，如果不存在则创建文件夹和文件
+    if not os.path.exists(filepath):
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        with open(filepath, mode='w', encoding='utf-8-sig', newline='') as file:
+            # 写入 CSV 文件的代码
+            writer = csv.writer(file)
+            writer.writerow(['Text', 'User ID', 'User Name', 'Nick Name New', 'IP Address'])
+    # 在追加模式下打开文件
+    with open(filepath, mode='a', encoding='utf-8-sig', newline='') as file:
         writer = csv.writer(file)
         for post in posts:
             text, user_id, user_name, nick_name_new, ip_address = await extract_post_info(post)
-            # print(text)
             if text:  # 检查text内容是否为空
                 writer.writerow([text, user_id, user_name, nick_name_new, ip_address])
 
@@ -73,17 +80,28 @@ async def get_data(url):
     title, page_number = get_page_title_and_page_number(url)
     print("正在爬取标题为"+title+"的帖子数据,一共有"+str(page_number)+"页")
     filename = f'{title}_{tid}_posts.csv'  # 使用 tid 变量命名文件
+    filepath = f'./TieBaData/{filename}'
     async with aiotieba.Client() as client:
         for page in range(1, page_number+1):
             posts = await client.get_posts(int(tid), rn=60, pn=page, with_comments=True)
-            print("已经获取第" + str(page) + "页")
-            await write_posts_to_csv(posts, filename)
-async def main():
-    url = input("请输入网址")
+            # print("已经获取第" + str(page) + "页")
+            await write_posts_to_csv(posts, filepath)
+    print("已经获取该帖子共" + str(page_number) + "页的数据")
+async def main(url):
     await get_data(url)
 
-
-if __name__ == "__main__":
+def GetTiebaData(url):
+    print(url)
+    tid = extract_id_from_url(url)
+    title, page_number = get_page_title_and_page_number(url)
+    filename = f'{title}_{tid}_posts.csv'  # 使用 tid 变量命名文件
+    filepath = f'./TieBaData/{filename}'
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    loop.run_until_complete(main())
+    loop.run_until_complete(main(url))
+    return filepath
+if __name__ == "__main__":
+    url = input("请输入要分析的贴吧网址")
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(main(url))

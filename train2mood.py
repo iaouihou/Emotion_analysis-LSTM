@@ -58,7 +58,6 @@ def load_dataset(path, pad_size, tokenizer, vocab):
     :param vocab: 词向量模型
     :return: 二元组，含有字ID，标签
     '''
-    stopwords = load_stop_words(stop_words_path)
     contents = []
     n=0
     with open(path, 'r', encoding='gbk') as f:

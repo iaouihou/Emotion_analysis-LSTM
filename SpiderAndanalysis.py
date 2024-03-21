@@ -1,32 +1,39 @@
+import sys
+from mycsv.csv import *
+
 import requests
 from bs4 import BeautifulSoup
 import re
+from spider.GetDataFromTieba import *
+from PyQt5.QtWidgets import QApplication, QDialog, QVBoxLayout, QLabel, QAction
+from PyQt5.uic import loadUi
+
+from UI_test import MyWindow
 
 proxies = { "http": None, "https": None}
 # 系统代理端口设置为None，避免Clash对Request造成影响
-def get_page_number(url):
-    try:
-        response = requests.get(url,proxies=proxies)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.content, 'html.parser')
-            last_page_link = soup.find('a', string='尾页', href=re.compile(r'pn=(\d+)'))
-            if last_page_link:
-                match = re.search(r'pn=(\d+)', last_page_link['href'])
-                if match:
-                    return int(int(match.group(1))/2)
-                else:
-                    print("Failed to extract page number from link.")
-            else:
-                print("Last page link not found.")
-        else:
-            print("Failed to fetch page:", response.status_code)
-    except Exception as e:
-        print("An error occurred:", e)
+class Spider(MyWindow):
+    def __init__(self):
+        super().__init__()
+        loadUi('./ui/spider.ui', self)  # 加载UI文件
+        self.setStyleSheet("background-color: white;")
+        self.close_pushButton.clicked.connect(self.close)
+        self.hidden_pushButton.clicked.connect(self.showMinimized)
+        # 将 spider_tieba 函数与 tieba_button 的 clicked 信号绑定
+        self.tieba_button.clicked.connect(self.spider_tieba)
 
-# 示例使用：
-url = "https://tieba.baidu.com/p/8929280685"  # 你的贴吧主题帖链接
-page_number = get_page_number(url)
-if page_number is not None:
-    print("Page number:", page_number)
-else:
-    print("Failed to fetch page number.")
+    def spider_tieba(self):
+        try:
+            url = self.url_lineEdit.text()
+            filepath = GetTiebaData(url)
+        except Exception as e:
+            print("An error occurred:", e)
+        print(read_csv_column(filepath,'text'))
+
+
+if __name__ == '__main__':
+    # 打开爬虫分析界面
+    app = QApplication(sys.argv)
+    window = Spider()
+    window.show()
+    sys.exit(app.exec_())
