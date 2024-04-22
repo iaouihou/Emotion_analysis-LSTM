@@ -7,7 +7,6 @@ import time
 import torch
 from collections import OrderedDict
 import torch.nn.functional as F
-from preprocess import  keep_chinese
 
 # 超参数设置
 vocab_path = './data/vocab.pkl'  # 词表

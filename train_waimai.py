@@ -20,6 +20,7 @@ from preprocess import *
 data_path =  './data/waimai_data.txt'              # 数据集
 vocab_path = './data/vocab.pkl'             # 词表
 save_path = './saved_dict/lstm_waimai.ckpt'        # 模型训练结果
+model_path = "./saved_dict/model.pth" #完整的模型
 embedding_pretrained = \
     torch.tensor(
     np.load(
@@ -234,6 +235,7 @@ def train( model, dataloaders):
         dev_acc, dev_loss = dev_eval(model, dataloaders['dev'], loss_function,Result_test=False)
         if dev_loss < dev_best_loss:
             dev_best_loss = dev_loss
+            torch.save(model, model_path)
             torch.save(model.state_dict(), save_path)
         train_acc = train_acci/step
         train_loss = train_lossi/step
