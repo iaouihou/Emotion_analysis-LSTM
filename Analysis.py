@@ -1,6 +1,10 @@
+from PyQt5.QtWidgets import QApplication
+
+from LoadCsv import LoadCsvWindow
 from mycsv.csv import write_to_csv
 from predict import predict_sentiment, get_sentiment_label
 import csv
+from mycsv.csv import *
 
 
 def read_csv_column(csv_file, column_name):
@@ -26,18 +30,30 @@ def read_csv_column(csv_file, column_name):
         return None
 
     return column_data
-def Analysis(csv_path,column_name):
-    column_data = read_csv_column(csv_path, column_name)
-    if column_data:
-        for input_text in column_data:
+def Analysis_tieba(csv_path, filename, column1_name, column2_name):
+    # column_data = read_csv_column(csv_path, column_name)
+    column1_data, column2_data = read_columns_from_csv(csv_path, column1_name, column2_name)
+    if column1_data and column2_data:
+        for input_text, ip in zip(column1_data, column2_data):
+            print(input_text+ip)
             negative, positive = predict_sentiment(input_text, pad_size=50)
-            new_csv_path = "results/" + csv_path
+            new_csv_path =f'TiebaAnalysis/{filename}.csv'
             # print(new_csv_path)
-            write_to_csv(new_csv_path, input_text, negative, positive)
+            write_to_csv_ip(new_csv_path, input_text, negative, positive,ip)
     else:
         print("Failed to read column data.")
     return new_csv_path
 
-csv_path = "TieBaData/【图片】我的逆天沸羊羊舍友给女朋友下跪求原谅【孙笑川吧】_百度贴吧_8930857397_posts.csv"
-column_name = "\ufeffText"
-print(Analysis(csv_path,column_name))
+if __name__ == "__main__":
+    csv_path = "TieBaData/逆天室友求求你别恶心我了【新孙笑川吧】_百度贴吧_8938247271_posts.csv"
+    filename = "逆天室友求求你别恶心我了【新孙笑川吧】_百度贴吧_8938247271_posts"
+    column1_name = "Text"
+    column2_name = "IP Address"
+    newfilepath = Analysis_tieba(csv_path, filename, column1_name, column2_name)
+    print(newfilepath)
+    app = QApplication([])
+    column_names = ['时间', '文本', '识别结果', '消极概率', '积极概率','ip属地']
+    csv_window = LoadCsvWindow(newfilepath)  # 创建第二个窗口实例
+    csv_window.load_csv(column_names)
+    csv_window.show()  # 显示第二个窗口
+    app.exec_()

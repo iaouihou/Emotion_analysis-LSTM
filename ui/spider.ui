@@ -76,7 +76,7 @@ QLabel{
    <widget class="QPushButton" name="tieba_button">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>110</x>
       <y>380</y>
       <width>150</width>
       <height>30</height>
@@ -218,6 +218,56 @@ background:#FFC105;
     </property>
     <property name="text">
      <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="select_file_button">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>380</y>
+      <width>150</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>16777215</width>
+      <height>30</height>
+     </size>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{
+    border:0px;
+    height:30px;
+    border-radius:15px;
+    font-family:'Microsoft YaHei';
+    font-size:20px;
+	color:white;
+    background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #fbc2eb, stop:1 #a6c1ee);
+    }
+
+ QPushButton:hover{
+     background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #ffd2f0, stop:1 #b0cbf8);
+ }
+ 
+ QPushButton:pressed{
+     background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #e1aad2, stop:1 #92adda);
+     }</string>
+    </property>
+    <property name="text">
+     <string>查看记录</string>
+    </property>
+    <property name="flat">
+     <bool>false</bool>
     </property>
    </widget>
   </widget>

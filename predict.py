@@ -92,7 +92,7 @@ def predict_sentiment(text, pad_size):
         probabilities = F.softmax(outputs, dim=1)
         negative=probabilities.cpu().numpy()[0][0]
         active=probabilities.cpu().numpy()[0][1]
-        return negative,active
+        return round(negative, 2), round(active, 2)
 def get_sentiment_label(negative, positive):
     # 如果negative和positive之差小于0.2，则认为是中性
     if abs(negative - positive) < 0.2:

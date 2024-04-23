@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import pickle as pkl
+
+from torch.optim.lr_scheduler import StepLR
 from tqdm import tqdm
 from datetime import timedelta
 from torch.utils.data import Dataset, DataLoader
@@ -64,41 +66,45 @@ def load_dataset(path, pad_size, tokenizer, vocab):
     with open(path, 'r', encoding='utf-8') as f:
         # tqdm可以看进度条
         for line in tqdm(f):
-            # 默认删除字符串line中的空格、’\n’、't’等。
-            lin = line.strip()
-            lin = re.sub(r'\[.*?\]', '', lin)
-            # 使用正则表达式删除@和:符号及其后面的文字
-            lin = re.sub(r'@.*?:', '', lin)
-            # 删除[]以及其中包含的文字，排除表情的影响
-            lin = lin.replace('//', '')
-            if not lin:
+            try:
+                # 默认删除字符串line中的空格、’\n’、't’等。
+                lin = line.strip()
+                lin = re.sub(r'\[.*?\]', '', lin)
+                # 使用正则表达式删除@和:符号及其后面的文字
+                lin = re.sub(r'@.*?:', '', lin)
+                # 删除[]以及其中包含的文字，排除表情的影响
+                lin = lin.replace('//', '')
+                if not lin:
+                    continue
+                # print(lin)
+                label,content = lin.split('	####	')
+                # word_line存储每个字的id
+                words_line = []
+                # 分割器，分词每个字
+                print(content)
+                # content = remove_stopwords(content,stopwords)
+                # print(content)
+                # print(token)
+                # 字的长度
+                token = tokenizer(content)
+                seq_len = len(token)
+                if pad_size:
+                    # 如果字长度小于指定长度，则填充，否则截断
+                    if len(token) < pad_size:
+                        token.extend([vocab.get(PAD)] * (pad_size - len(token)))
+                    else:
+                        token = token[:pad_size]
+                        seq_len = pad_size
+                # 将每个字映射为ID
+                # 如果在词表vocab中有word这个单词，那么就取出它的id；
+                # 如果没有，就去除UNK（未知词）对应的id，其中UNK表示所有的未知词（out of vocab）都对应该id
+                for word in token:
+                    words_line.append(vocab.get(word, vocab.get(UNK)))
+                n+=1
+                contents.append((words_line, int(label)))
+            except ValueError:
+                print("Error: Unable to split line:", line)
                 continue
-            # print(lin)
-            label,content = lin.split('	####	')
-            # word_line存储每个字的id
-            words_line = []
-            # 分割器，分词每个字
-            print(content)
-            # content = remove_stopwords(content,stopwords)
-            # print(content)
-            # print(token)
-            # 字的长度
-            token = tokenizer(content)
-            seq_len = len(token)
-            if pad_size:
-                # 如果字长度小于指定长度，则填充，否则截断
-                if len(token) < pad_size:
-                    token.extend([vocab.get(PAD)] * (pad_size - len(token)))
-                else:
-                    token = token[:pad_size]
-                    seq_len = pad_size
-            # 将每个字映射为ID
-            # 如果在词表vocab中有word这个单词，那么就取出它的id；
-            # 如果没有，就去除UNK（未知词）对应的id，其中UNK表示所有的未知词（out of vocab）都对应该id
-            for word in token:
-                words_line.append(vocab.get(word, vocab.get(UNK)))
-            n+=1
-            contents.append((words_line, int(label)))
 
     train, X_t = train_test_split(contents, test_size=0.4, random_state=42)
     dev,test= train_test_split(X_t, test_size=0.5, random_state=42)
@@ -138,6 +144,7 @@ class Model(nn.Module):
         self.lstm = nn.LSTM(embed, hidden_size, num_layers,
                             bidirectional=True, batch_first=True, dropout=dropout)
         # 因为是双向LSTM，所以层数为config.hidden_size * 2
+        # self.dropout = nn.Dropout(dropout)
         self.fc = nn.Linear(hidden_size * 2, num_classes)
 
     def forward(self, x):
@@ -145,6 +152,7 @@ class Model(nn.Module):
         # lstm 的input为[batchsize, max_length, embedding_size]，输出表示为 output,(h_n,c_n),
         # 保存了每个时间步的输出，如果想要获取最后一个时间步的输出，则可以这么获取：output_last = output[:,-1,:]
         out, _ = self.lstm(out)
+        # out = self.dropout(out)
         out = self.fc(out[:, -1, :])  # 句子最后时刻的 hidden state
         return out
 def get_time_dif(start_time):
@@ -199,6 +207,8 @@ def train( model, dataloaders):
     '''
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     loss_function = torch.nn.CrossEntropyLoss()
+    # 创建一个学习率调整器，每个 step_size 个 epoch 调整一次学习率，调整比例为 gamma
+    scheduler = StepLR(optimizer, step_size=10, gamma=0.1)
 
     dev_best_loss = float('inf')
 
@@ -243,6 +253,7 @@ def train( model, dataloaders):
         plot_train_loss.append(train_loss)
         print("epoch = {} :  train_loss = {:.3f}, train_acc = {:.2%}, dev_loss = {:.3f}, dev_acc = {:.2%}".
                   format(i+1, train_loss, train_acc, dev_loss, dev_acc))
+        scheduler.step()#动态调整学习率
     plot_acc(plot_train_acc)
     plot_loss(plot_train_loss)
     # 3，验证循环----------------------------------------------------------------

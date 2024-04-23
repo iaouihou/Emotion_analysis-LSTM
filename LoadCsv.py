@@ -7,7 +7,7 @@ from ui.MyWindows import MyWindow
 
 
 class LoadCsvWindow(MyWindow):
-    def __init__(self):
+    def __init__(self,csv_path):
         super().__init__()
         loadUi('./ui/loadcsv.ui', self)  # 加载UI文件
         self.setWindowTitle('CSV Viewer')
@@ -28,10 +28,11 @@ class LoadCsvWindow(MyWindow):
         self.table_widget.setContextMenuPolicy(3)  # 3 表示右键菜单策略
         self.table_widget.customContextMenuRequested.connect(self.show_context_menu)
 
-        # 设置常量csv_path
-        self.csv_path = './results/results.csv'
+        # 设置csv_path
+        # self.csv_path = './results/results.csv'
+        self.csv_path = csv_path
 
-        self.load_csv()  # 加载 CSV 文件
+        # self.load_csv()  # 加载 CSV 文件
 
     def center(self):
         # 获取屏幕的尺寸
@@ -44,7 +45,7 @@ class LoadCsvWindow(MyWindow):
         # 设置窗口的位置
         self.move(x, y)
 
-    def load_csv(self):
+    def load_csv(self,column_names):
         try:
             # 读取 CSV 文件
             self.df = pd.read_csv(self.csv_path, encoding='utf-8-sig')
@@ -53,8 +54,6 @@ class LoadCsvWindow(MyWindow):
             self.table_widget.setRowCount(self.df.shape[0])
             self.table_widget.setColumnCount(self.df.shape[1])
 
-            # 设置表头
-            column_names = ['时间', '文本', '识别结果', '消极概率', '积极概率']
             self.table_widget.setHorizontalHeaderLabels(column_names)
 
             # 填充表格内容
@@ -71,6 +70,7 @@ class LoadCsvWindow(MyWindow):
             # 调整表格大小
             self.table_widget.resizeColumnsToContents()
             self.table_widget.resizeRowsToContents()
+            self.adjustSize()
         except Exception as e:
             print("An error occurred while loading CSV file:", e)
 
@@ -94,6 +94,8 @@ class LoadCsvWindow(MyWindow):
 
 if __name__ == "__main__":
     app = QApplication([])
-    window = LoadCsvWindow()
+    window = LoadCsvWindow("./results/results.csv")
+    column_names = ['时间', '文本', '识别结果', '消极概率', '积极概率']
+    window.load_csv( column_names)
     window.show()
     app.exec_()

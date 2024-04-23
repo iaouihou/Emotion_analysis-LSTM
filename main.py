@@ -1,10 +1,8 @@
-import csv
-import os
+
 import sys
-import time
 
 from predict import predict_sentiment
-from predict import get_sentiment_label
+from SpiderAndanalysis import *
 from PyQt5.QtWidgets import QApplication, QDialog, QVBoxLayout, QLabel, QAction
 from PyQt5.uic import loadUi
 from LoadCsv import LoadCsvWindow
@@ -44,11 +42,19 @@ class MainWindow(MyWindow):
         self.center()  # 调用居中方法
         # 设置背景颜色为白色
         # self.setStyleSheet("background-color: white;")
+        # 菜单栏
         self.create_menu_bar()
+        # 情感分析
         self.start_button.clicked.connect(self.analyze_sentiment)
+        # 清空输入框
         self.clear_button.clicked.connect(self.clear_input)
+        #爬虫并分析
+        self.spider_button.clicked.connect(self.open_Spider_window)
+        # 结果管理
         self.load_button.clicked.connect(self.open_LoadCsv_window)
+        # 关闭
         self.close_pushButton.clicked.connect(self.close)
+        # 最小化
         self.hidden_pushButton.clicked.connect(self.showMinimized)
         # 隐藏标题栏
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
@@ -61,9 +67,15 @@ class MainWindow(MyWindow):
         help_menu.addAction(about_action)
 
     def open_LoadCsv_window(self):
-        self.csv_window = LoadCsvWindow()  # 创建第二个窗口实例
+        # 设置表头
+        column_names = ['时间', '文本', '识别结果', '消极概率', '积极概率']
+        self.csv_window = LoadCsvWindow(csv_path)  # 创建第二个窗口实例
+        self.csv_window.load_csv(column_names)
         self.csv_window.show()  # 显示第二个窗口
-
+    def open_Spider_window(self):
+        # 打开爬虫分析界面
+        self.Spider_window = Spider()
+        self.Spider_window.show()
     def show_about_dialog(self):
         about_dialog = QDialog()
         about_dialog.setWindowTitle('About')
