@@ -6,7 +6,7 @@ import json
 
 # 设置为自己的cookies
 cookies = {'SINAGLOBAL': '8445635544520.529.1682397011828', 'SCF': 'AkJR0194dWHjGCrVYp43Qak5SdLcxtm5gHAEt3oQAMMTf-epPmP7vq-6LXvqIi1L2MnwOG7efAXZzL3tzTcOaWg.', 'XSRF-TOKEN': 'UGapigeOJuaz36sokPW1V9Eq', '_s_tentry': 'weibo.com', 'Apache': '598445863379.6863.1710043891429', 'ULV': '1710043891480:6:1:1:598445863379.6863.1710043891429:1692939214850', 'ALF': '1712637666', 'SUB': '_2A25I6UmyDeRhGeVH61ER8ybLzj2IHXVrh8N6rDV8PUJbkNANLROikW1NT2_8PAhCDokQ_Z3Ju5cYyztnlmgW1Qwn', 'SUBP': '0033WrSXqPxfM725Ws9jqgMF55529P9D9WFVQY0.ZrQIFZ-VFAR5qlnW5JpX5KzhUgL.Foe4ehe7e0nNSK22dJLoIfQLxKnLB.qL1K.LxK-L12qLBoMLxK-LBo2L1h-LxKML1hBLBoqLxKnLB.qL1KnLxKnL1heLB.BLxKML1K.LB.zLxK-LB.BL1K-LxK-LB.-L1KMLxKBLBonL122t'}
-
+proxies = { "http": None, "https": None}
 
 
 def get_the_list_response(q='话题', n='1', p='页码'):
@@ -31,7 +31,7 @@ def get_the_list_response(q='话题', n='1', p='页码'):
         'nodup': n,
         'page': p,
     }
-    response = requests.get('https://s.weibo.com/weibo', params=params, cookies=cookies, headers=headers)
+    response = requests.get('https://s.weibo.com/weibo',proxies=proxies, params=params, cookies=cookies, headers=headers)
     return response
 
 

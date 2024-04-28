@@ -100,8 +100,8 @@ def load_dataset(path, pad_size, tokenizer, vocab):
             n+=1
             contents.append((words_line, int(label)))
 
-    train, X_t = train_test_split(contents, test_size=0.4, random_state=42)
-    dev,test= train_test_split(X_t, test_size=0.5, random_state=42)
+    train, X_t = train_test_split(contents, test_size=0.3, random_state=42)
+    dev,test= train_test_split(X_t, test_size=0.3, random_state=42)
     return train,dev,test
 # get_data()
 

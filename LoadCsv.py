@@ -16,7 +16,7 @@ class LoadCsvWindow(MyWindow):
         # self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
         self.layout = QVBoxLayout(self.central_widget)
-        self.setFixedSize(800, 600)  # 设置窗口大小
+        self.setFixedSize(1000, 800)  # 设置窗口大小
         self.center()  # 调用居中方法
         # 美化后的最小化和关闭键
         self.close_pushButton.clicked.connect(self.close)

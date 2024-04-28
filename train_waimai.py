@@ -30,10 +30,10 @@ embedding_pretrained = \
     ["embeddings"].astype('float32'))
                                             # 预训练词向量
 embed = embedding_pretrained.size(1)        # 词向量维度
-dropout = 0.5                               # 随机丢弃
+dropout = 0.3                               # 随机丢弃
 num_classes = 2                             # 类别数
-num_epochs = 10                             # epoch数
-batch_size = 128                            # mini-batch大小
+num_epochs = 10                            # epoch数
+batch_size = 32                        # mini-batch大小
 pad_size = 50                               # 每句话处理成的长度(短填长切)
 learning_rate = 1e-3                        # 学习率
 hidden_size = 128                           # lstm隐藏层
@@ -106,8 +106,8 @@ def load_dataset(path, pad_size, tokenizer, vocab):
                 print("Error: Unable to split line:", line)
                 continue
 
-    train, X_t = train_test_split(contents, test_size=0.4, random_state=42)
-    dev,test= train_test_split(X_t, test_size=0.5, random_state=42)
+    train, X_t = train_test_split(contents, test_size=0.3, random_state=42)
+    dev,test= train_test_split(X_t, test_size=0.3, random_state=42)
     return train,dev,test
 # get_data()
 
@@ -186,7 +186,7 @@ def plot_acc(train_acc):
     plt.xlabel('Epoch')
     plt.ylabel('Acc')
     plt.legend(loc='best')
-    plt.savefig('results/acc.png', dpi=400)
+    plt.savefig('results/acc_waimai.png', dpi=400)
 
 def plot_loss(train_loss):
     sns.set(style='darkgrid')
@@ -196,7 +196,7 @@ def plot_loss(train_loss):
     plt.xlabel('Epoch')
     plt.ylabel('loss')
     plt.legend(loc='best')
-    plt.savefig('results/loss.png', dpi=400)
+    plt.savefig('results/loss_waimai.png', dpi=400)
 
 # 定义训练的过程
 def train( model, dataloaders):
@@ -275,7 +275,7 @@ def result_test(real, pred):
     labels11 = ['negative', 'active']
     disp = ConfusionMatrixDisplay(confusion_matrix=cv_conf, display_labels=labels11)
     disp.plot(cmap="Blues", values_format='')
-    plt.savefig("results/reConfusionMatrix.tif", dpi=400)
+    plt.savefig("results/reConfusionMatrix_waimai.tif", dpi=400)
 
 # 模型评估
 def dev_eval(model, data, loss_function,Result_test=False):

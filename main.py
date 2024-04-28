@@ -1,7 +1,4 @@
 
-import sys
-
-from predict import predict_sentiment
 from SpiderAndanalysis import *
 from PyQt5.QtWidgets import QApplication, QDialog, QVBoxLayout, QLabel, QAction
 from PyQt5.uic import loadUi

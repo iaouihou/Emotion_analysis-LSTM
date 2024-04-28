@@ -21,9 +21,7 @@ embed = embedding_pretrained.size(1)  # 词向量维度
 dropout = 0.5  # 随机丢弃
 num_classes = 2  # 类别数
 num_epochs = 30  # epoch数
-batch_size = 128  # mini-batch大小
 pad_size = 50  # 每句话处理成的长度(短填长切)
-learning_rate = 1e-3  # 学习率
 hidden_size = 128  # lstm隐藏层
 num_layers = 2  # lstm层数
 MAX_VOCAB_SIZE = 10000  # 词表长度限制
@@ -95,7 +93,7 @@ def predict_sentiment(text, pad_size):
         return round(negative, 2), round(active, 2)
 def get_sentiment_label(negative, positive):
     # 如果negative和positive之差小于0.2，则认为是中性
-    if abs(negative - positive) < 0.2:
+    if abs(negative - positive) < 0.31:
         return "中性"
     # 否则，根据negative和positive的比例来确定情感
     elif negative > positive:
