@@ -98,7 +98,7 @@ def visualize_sentiments(csv_file):
 
     # 柱状图 - 情绪评论支持与反对
     support_oppose_sentiments = df.groupby('识别结果')[['支持', '反对']].sum().reindex(index=['积极', '中性', '消极'])
-
+    print(support_oppose_sentiments)
     fig.add_trace(
         go.Bar(x=support_oppose_sentiments.index, y=support_oppose_sentiments['支持'], name='情绪评论支持与反对 - 支持', marker_color='#1f77b4'),
         row=3, col=1

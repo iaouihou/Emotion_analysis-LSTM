@@ -92,8 +92,8 @@ def predict_sentiment(text, pad_size):
         active=probabilities.cpu().numpy()[0][1]
         return round(negative, 2), round(active, 2)
 def get_sentiment_label(negative, positive):
-    # 如果negative和positive之差小于0.2，则认为是中性
-    if abs(negative - positive) < 0.31:
+    # 如果negative和positive之差小于0.25，则认为是中性
+    if abs(negative - positive) < 0.25:
         return "中性"
     # 否则，根据negative和positive的比例来确定情感
     elif negative > positive:
@@ -134,7 +134,7 @@ model = Model().to(device)
 model = Model()
 
 # 加载训练好的模型参数
-model_path = './saved_dict/lstm_waimai.ckpt'
+model_path = './saved_dict/lstm.ckpt'
 model = load_model(model, model_path)
 
 if __name__ == '__main__':

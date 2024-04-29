@@ -70,7 +70,7 @@ QLabel{
      <string/>
     </property>
     <property name="placeholderText">
-     <string>输入贴吧网址</string>
+     <string>输入帖子链接</string>
     </property>
    </widget>
    <widget class="QPushButton" name="tieba_button">
@@ -117,7 +117,7 @@ QLabel{
      }</string>
     </property>
     <property name="text">
-     <string>贴吧</string>
+     <string>爬取并分析</string>
     </property>
     <property name="flat">
      <bool>false</bool>

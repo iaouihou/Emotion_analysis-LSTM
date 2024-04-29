@@ -59,7 +59,8 @@ def get_page_title_and_page_number(url):
                 else:
                     print("Failed to extract page number from link.")
             else:
-                print("Last page link not found.")
+                print("使用默认页数1")
+                return title,1
         else:
             print("Failed to fetch page:", response.status_code)
     except Exception as e:

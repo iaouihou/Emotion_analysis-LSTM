@@ -50,6 +50,9 @@ class Spider(MyWindow):
      file_path = self.select_file()
      if file_path:
          visualize_sentiments(file_path)
+
+    from PyQt5.QtWidgets import QMessageBox
+
     def spider_tieba(self):
         try:
             url = self.url_lineEdit.text()
@@ -61,12 +64,15 @@ class Spider(MyWindow):
             column4_name = "Disagree"
             column5_name = "Gender"
             print("开始分析")
-            newfilepath = Analysis_tieba(filepath, filename, column1_name, column2_name, column3_name, column4_name, column5_name)
+            newfilepath = Analysis_tieba(filepath, filename, column1_name, column2_name, column3_name, column4_name,
+                                         column5_name)
             # 分析完成后显示消息框
+            QMessageBox.information(self, "成功", f"成功爬取 {filename}")
             print(newfilepath)
         except Exception as e:
             print("An error occurred:", e)
-        # # 分析完成后显示消息框
+            QMessageBox.information(self, "错误", "发生错误，请检查URL和网络连接")
+
     def create_menu_bar(self):
         menubar = self.menuBar()
         help_menu = menubar.addMenu('Help')
